@@ -4,8 +4,8 @@ from fastapi import FastAPI
 import databases
 import sqlalchemy
 from pydantic import BaseModel
-
-DATABASE_URL = "postgresql://jajekzvdqtfyrh:e437bf33634dfd8a905cf65d99edf51cbc36a7e67c720245425537cbf157896e@ec2-54-82-205-3.compute-1.amazonaws.com:5432/d8g1ah013qjnrg"
+ 
+DATABASE_URL = "postgresql://kvlbqwzwyclxdr:cea72d3c43d03759206e20040f6e30363d11543223ff69ed311628471e5f87cb@ec2-44-209-57-4.compute-1.amazonaws.com:5432/d96saoa1b6nr5k"
 
 database = databases.Database(DATABASE_URL)
 
@@ -33,8 +33,10 @@ class Note(BaseModel):
 class NoteIn(BaseModel):
     text: str
     completed: bool
- 
+
+
 app = FastAPI()
+
 
 @app.on_event("startup")
 async def startup():
