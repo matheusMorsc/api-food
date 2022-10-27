@@ -14,9 +14,9 @@ metadata = sqlalchemy.MetaData()
 notes = sqlalchemy.Table(
     "notes",
     metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("text", sqlalchemy.String),
-    sqlalchemy.Column("completed", sqlalchemy.Boolean)
+    sqlalchemy.Column("name", sqlalchemy.String, primary_key=True),
+    sqlalchemy.Column("img", sqlalchemy.String),
+    sqlalchemy.Column("level", sqlalchemy.String)
 )
 
 engine = sqlalchemy.create_engine(
@@ -26,13 +26,9 @@ engine = sqlalchemy.create_engine(
 metadata.create_all(engine)
 
 class Note(BaseModel):
-    id: int
-    text: str
-    completed: bool
-
-class NoteIn(BaseModel):
-    text: str
-    completed: bool
+    name: str
+    img: str
+    level: str
 
 
 app = FastAPI()
@@ -54,7 +50,7 @@ async def read_notes():
     return await database.fetch_all(query) 
 
 @app.post("/notes/", response_model=List[Note])   
-async def create_notes(note: NoteIn):
-    query = notes.insert().values(text=note.text, completed=note.completed)
-    last_record_id = await database.execute(query)
-    return {**note.dict(), "id": last_record_id}
+async def create_notes(note: Note):
+    query = notes.insert().values(name=note.name, img=note.img, level=note.level)
+    last_record_name = await database.execute(query)
+    return {**note.dict(), "name": last_record_name}
