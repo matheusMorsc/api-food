@@ -4,6 +4,21 @@ from fastapi import FastAPI
 import databases
 import sqlalchemy
 from pydantic import BaseModel
+from starlette.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+origins = [
+    'http://localhost:3000'
+]
+ 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['GET'],
+    allow_headers=['Content-Type','application/xml'],
+)
 
 DATABASE_URL = "postgresql://jajekzvdqtfyrh:e437bf33634dfd8a905cf65d99edf51cbc36a7e67c720245425537cbf157896e@ec2-54-82-205-3.compute-1.amazonaws.com:5432/d8g1ah013qjnrg"
 
@@ -35,7 +50,6 @@ class NoteIn(BaseModel):
     completed: bool
  
 
-app = FastAPI()
 
 @app.on_event("startup")
 async def startup():
