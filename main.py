@@ -44,7 +44,7 @@ async def shutdown():
 
 @app.get("/menu/", response_model=List[Menu])   
 async def read_restaurantes():
-    query = menu.select()
+    query = menus.select()
     return await database.fetch_all(query) 
 
 @app.post("/menu/", response_model=List[Menu])   
