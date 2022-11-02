@@ -11,34 +11,44 @@ database = databases.Database(DATABASE_URL)
 
 metadata = sqlalchemy.MetaData()
 
+menus = sqlalchemy.Table(
+    "menus",
+    metadata,
+    sqlalchemy.Column("nome", sqlalchemy.String, primary_key=True),
+    sqlalchemy.Column("img", sqlalchemy.String),
+)
+
 engine = sqlalchemy.create_engine(
     DATABASE_URL
 )
 
 metadata.create_all(engine)
 
-app = FastAPI()
-
-menu = sqlalchemy.Table(
-    "menu",
-    metadata,
-    sqlalchemy.Column("nome", sqlalchemy.String, primary_key=True),
-    sqlalchemy.Column("img", sqlalchemy.String),
-)
-
 class Menu(BaseModel):
     nome: str
     img: str
+
+
+app = FastAPI()
+
 
 @app.on_event("startup")
 async def startup():
     await database.connect()
 
+
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
   
+
 @app.get("/menu/", response_model=List[Menu])   
 async def read_restaurantes():
     query = menu.select()
     return await database.fetch_all(query) 
+
+@app.post("/menu/", response_model=List[Menu])   
+async def create_restaurantes(menu: Menu):
+    query = menus.insert().values(nome=menu.name, img=menu.img)
+    last_record_name = await database.execute(query)
+    return {**menu.dict(), "nome": last_record_name}
