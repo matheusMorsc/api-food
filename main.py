@@ -28,6 +28,10 @@ class Menu(BaseModel):
     nome: str
     img: str
 
+class MenuIn(BaseModel):
+    nome: str
+    img: str
+
 
 app = FastAPI()
 
@@ -48,7 +52,7 @@ async def read_restaurantes():
     return await database.fetch_all(query) 
 
 @app.post("/menu/", response_model=Menu)   
-async def create_restaurantes(menu: Menu):
+async def create_restaurantes(menu: MenuIn):
     query = menus.insert().values(nome=menu.name, img=menu.img)
-    last_record_id = await database.execute(query)
-    return {**menu.dict(), "id": last_record_id}
+    last_record_nome = await database.execute(query)
+    return {**menu.dict(), "nome": last_record_nome}
