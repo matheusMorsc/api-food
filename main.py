@@ -95,6 +95,11 @@ async def read_item():
     query = itens.select()
     return await database.fetch_all(query)
 
+@app.get("/item/{id}", response_model=List[Item])   
+async def read_item(id:int):
+    query = itens.select().where(itens.c.id == id)
+    return await database.fetch_all(query)
+
 @app.post("/item/", response_model=Item)   
 async def create_item(item: ItemIn):
     query = itens.insert().values(title=item.title, image=item.image, price=item.price, description=item.description)
