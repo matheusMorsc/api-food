@@ -17,10 +17,10 @@ menus = sqlalchemy.Table(
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("nome", sqlalchemy.String),
     sqlalchemy.Column("img", sqlalchemy.String),
-    sqlalchemy.Column("preco", sqlalchemy.Integer),
+    sqlalchemy.Column("preco", sqlalchemy.String),
     sqlalchemy.Column("revisao", sqlalchemy.Integer),
     sqlalchemy.Column("avaliacao", sqlalchemy.Integer),
-    sqlalchemy.Column("categorias", sqlalchemy.Integer),
+    sqlalchemy.Column("categoria", sqlalchemy.String),
 )
 
 engine = sqlalchemy.create_engine(
