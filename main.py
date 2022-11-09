@@ -17,9 +17,11 @@ menus = sqlalchemy.Table(
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("nome", sqlalchemy.String),
     sqlalchemy.Column("img", sqlalchemy.String),
-    sqlalchemy.Column("preco", sqlalchemy.Integer),
+    sqlalchemy.Column("preco", sqlalchemy.String),
     sqlalchemy.Column("revisao", sqlalchemy.Integer),
     sqlalchemy.Column("avaliacao", sqlalchemy.Integer),
+    sqlalchemy.Column("categoria", sqlalchemy.String),
+
 
 )
 
@@ -33,18 +35,19 @@ class Menu(BaseModel):
     id: int
     nome: str
     img: str
-    preco: int
+    preco: str
     revisao: int
     avaliacao: int
-    
+    categoria: str
 
 
 class MenuIn(BaseModel):
     nome: str
     img: str
-    preco: int
+    preco: str
     revisao: int
     avaliacao: int
+    categoria: str
 
 app = FastAPI()
 
@@ -64,6 +67,6 @@ async def read_restaurantes():
 
 @app.post("/menu/", response_model=Menu)   
 async def create_restaurantes(menu: MenuIn):
-    query = menus.insert().values(nome=menu.nome, img=menu.img, preco=menu.preco, revisao=menu.revisao, avaliacao=menu.avaliacao)
+    query = menus.insert().values(nome=menu.nome, img=menu.img, preco=menu.preco, revisao=menu.revisao, avaliacao=menu.avaliacao, categoria=menu.categoria)
     last_record_id = await database.execute(query)
     return {**menu.dict(), "id": last_record_id}
