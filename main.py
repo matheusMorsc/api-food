@@ -5,7 +5,7 @@ import databases
 import sqlalchemy
 from pydantic import BaseModel
  
-DATABASE_URL = "postgresql://qvqtkcccqbhixf:07767eb05b3f44bbfea04d029da3a3ac390e7dc9122331d497c8ad1482e1c7f6@ec2-107-23-76-12.compute-1.amazonaws.com:5432/d6qrgl98nj9om6"
+DATABASE_URL = "postgresql://ftrhsjtstmpeje:17df4f3741976fb20e3905810153598ba865061e72b65f7954a94832f1231c92@ec2-18-215-41-121.compute-1.amazonaws.com:5432/d3am4gch1nbf8m"
 
 database = databases.Database(DATABASE_URL)
 
@@ -96,7 +96,7 @@ async def read_item():
     return await database.fetch_all(query)
 
 @app.get("/item/{id}", response_model=List[Item])   
-async def read_item(id:int):
+async def read_item_by_id(id:int):
     query = itens.select().where(itens.c.id == id)
     return await database.fetch_all(query)
 
