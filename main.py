@@ -27,10 +27,10 @@ itens = sqlalchemy.Table(
     "itens",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("titulo", sqlalchemy.String),
-    sqlalchemy.Column("descricao", sqlalchemy.String),
-    sqlalchemy.Column("preco", sqlalchemy.String),
-    sqlalchemy.Column("img", sqlalchemy.String),
+    sqlalchemy.Column("title", sqlalchemy.String),
+    sqlalchemy.Column("description", sqlalchemy.String),
+    sqlalchemy.Column("price", sqlalchemy.String),
+    sqlalchemy.Column("image", sqlalchemy.String),
 )
 
 engine = sqlalchemy.create_engine(
@@ -58,16 +58,16 @@ class MenuIn(BaseModel):
 
 class Item(BaseModel):
     id: int
-    titulo: str
-    descricao: str
-    preco: str
-    img: str
+    title: str
+    description: str
+    price: str
+    image: str
 
 class ItemIn(BaseModel):
-    titulo: str
-    descricao: str
-    preco: str
-    img: str
+    title: str
+    description: str
+    price: str
+    image: str
 
 app = FastAPI()
 
@@ -97,6 +97,6 @@ async def read_item():
 
 @app.post("/item/", response_model=Item)   
 async def create_item(item: ItemIn):
-    query = itens.insert().values(titulo=item.titulo, img=item.img, preco=item.preco, descricao=item.descricao)
+    query = itens.insert().values(title=item.title, image=item.image, price=item.price, description=item.description)
     last_record_id2 = await database.execute(query)
     return {**item.dict(), "id": last_record_id2}
