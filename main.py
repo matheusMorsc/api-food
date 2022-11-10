@@ -27,6 +27,7 @@ itens = sqlalchemy.Table(
     "itens",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("subid", sqlalchemy.Integer),
     sqlalchemy.Column("title", sqlalchemy.String),
     sqlalchemy.Column("description", sqlalchemy.String),
     sqlalchemy.Column("price", sqlalchemy.String),
@@ -47,6 +48,7 @@ class Menu(BaseModel):
     revisao: int
     avaliacao: int
     categoria: str
+    subname: str
 
 class MenuIn(BaseModel):
     nome: str
@@ -55,21 +57,26 @@ class MenuIn(BaseModel):
     revisao: int
     avaliacao: int
     categoria: str
+    subname: str
 
 class Item(BaseModel):
     id: int
+    subid: int
     title: str
     description: str
     price: str
     image: str
 
 class ItemIn(BaseModel):
+    subid: int
     title: str
     description: str
     price: str
     image: str
 
 app = FastAPI()
+
+## INCICIO E FIM
 
 @app.on_event("startup")
 async def startup():
@@ -78,6 +85,8 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
+    
+## RESTAURANTES
   
 @app.get("/menu/", response_model=List[Menu])   
 async def read_restaurantes():
@@ -90,18 +99,20 @@ async def create_restaurantes(menu: MenuIn):
     last_record_id = await database.execute(query)
     return {**menu.dict(), "id": last_record_id}
 
+## ITENS
+
 @app.get("/item/", response_model=List[Item])   
 async def read_item():
     query = itens.select()
     return await database.fetch_all(query)
 
-@app.get("/item/{id}", response_model=List[Item])   
-async def read_item_by_id(id:int):
-    query = itens.select().where(itens.c.id == id)
+@app.get("/item/{subid}", response_model=List[Item])   
+async def read_item_by_id(subid:int):
+    query = itens.select().where(itens.c.subid == subid)
     return await database.fetch_all(query)
-
+    
 @app.post("/item/", response_model=Item)   
 async def create_item(item: ItemIn):
-    query = itens.insert().values(title=item.title, image=item.image, price=item.price, description=item.description)
+    query = itens.insert().values(title=item.title, image=item.image, price=item.price, description=item.description, subid=item.subid)
     last_record_id2 = await database.execute(query)
     return {**item.dict(), "id": last_record_id2}
