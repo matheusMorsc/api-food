@@ -48,7 +48,6 @@ class Menu(BaseModel):
     revisao: int
     avaliacao: int
     categoria: str
-    subname: str
 
 class MenuIn(BaseModel):
     nome: str
@@ -57,7 +56,6 @@ class MenuIn(BaseModel):
     revisao: int
     avaliacao: int
     categoria: str
-    subname: str
 
 class Item(BaseModel):
     id: int
