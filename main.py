@@ -43,6 +43,17 @@ cadastros = sqlalchemy.Table(
     
 )
 
+pedidos = sqlalchemy.Table(
+    "pedidos",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("title", sqlalchemy.String),
+    sqlalchemy.Column("description", sqlalchemy.String),
+    sqlalchemy.Column("price", sqlalchemy.String),
+    sqlalchemy.Column("image", sqlalchemy.String),
+    
+)
+
 engine = sqlalchemy.create_engine(
     DATABASE_URL
 )
@@ -93,11 +104,25 @@ class Cadastro(BaseModel):
     email: str
     senha: str 
 
-
 class CadastroIn(BaseModel):
     nome: str
     email: str
     senha: str
+
+class Pedido(BaseModel):
+    id: int
+    subid: int
+    title: str
+    description: str
+    price: str
+    image: str
+
+class PedidoIn(BaseModel):
+    subid: int
+    title: str
+    description: str
+    price: str
+    image: str
 
 app = FastAPI()
 
@@ -152,3 +177,11 @@ async def create_cadastros(cadastro: CadastroIn):
     query = cadastros.insert().values(nome=cadastro.nome, email=cadastro.email, senha=cadastro.senha)
     last_record_id3 = await database.execute(query)
     return {**cadastro.dict(), "id": last_record_id3}
+
+
+## PEDIDO
+@app.post("/pedido/", response_model=Pedido)   
+async def create_cadastros(pedido: PedidoIn):
+    query = pedidos.insert().values(title=pedido.title, image=pedido.image, price=pedido.price, description=pedido.description, subid=pedido.subid)
+    last_record_id4 = await database.execute(query)
+    return {**pedido.dict(), "id": last_record_id4}
