@@ -47,6 +47,7 @@ pedidos = sqlalchemy.Table(
     "pedidos",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("subid", sqlalchemy.Integer),
     sqlalchemy.Column("title", sqlalchemy.String),
     sqlalchemy.Column("description", sqlalchemy.String),
     sqlalchemy.Column("price", sqlalchemy.String),
@@ -180,8 +181,14 @@ async def create_cadastros(cadastro: CadastroIn):
 
 
 ## PEDIDO
+
+@app.get("/pedido/", response_model=List[Pedido])   
+async def read_pedidos():
+    query = pedidos.select()
+    return await database.fetch_all(query) 
+
 @app.post("/pedido/", response_model=Pedido)   
-async def create_cadastros(pedido: PedidoIn):
+async def create_pedidos(pedido: PedidoIn):
     query = pedidos.insert().values(title=pedido.title, image=pedido.image, price=pedido.price, description=pedido.description, subid=pedido.subid)
     last_record_id4 = await database.execute(query)
     return {**pedido.dict(), "id": last_record_id4}
