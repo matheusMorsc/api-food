@@ -185,6 +185,11 @@ async def create_cadastros(cadastro: CadastroIn):
 @app.get("/pedido/", response_model=List[Pedido])   
 async def read_pedidos():
     query = pedidos.select()
+    return await database.fetch_all(query)
+
+@app.get("/pedido/{subid}", response_model=List[Pedido])   
+async def read_item_by_id(subid:int):
+    query = pedidos.select().where(pedidos.c.subid == subid)
     return await database.fetch_all(query) 
 
 @app.post("/pedido/", response_model=Pedido)   
