@@ -59,6 +59,7 @@ testes = sqlalchemy.Table(
     "testes",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("subid", sqlalchemy.Integer),
     sqlalchemy.Column("alltestes", sqlalchemy.ARRAY(sqlalchemy.String)),
 )
 
@@ -136,9 +137,11 @@ class PedidoIn(BaseModel):
 
 class Teste(BaseModel):
     id: int
+    subid: int
     alltestes: list[list[str]]
 
 class TesteIn(BaseModel):
+    subid: int
     alltestes: list[list[str]]
 
 
@@ -222,6 +225,11 @@ async def create_pedidos(pedido: PedidoIn):
 async def read_array():
     query = testes.select()
     return await database.fetch_all(query)
+
+@app.get("/pedido/{subid}", response_model=List[Teste])   
+async def read_item_by_id(subid:int):
+    query = testes.select().where(testes.c.subid == subid)
+    return await database.fetch_all(query) 
 
 @app.post("/teste/", response_model=Teste)   
 async def create_pedidos(pedido: TesteIn):
