@@ -60,6 +60,7 @@ testes = sqlalchemy.Table(
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("subid", sqlalchemy.Integer),
+    # sqlalchemy.Column("alltestes", sqlalchemy.String),
     sqlalchemy.Column("alltestes", sqlalchemy.ARRAY(sqlalchemy.String)),
 )
 
@@ -126,12 +127,12 @@ class CadastroIn(BaseModel):
 #     price: str
 #     image: str
 
-# class PedidoIn(BaseModel):
-#     # subid: int
-#     title: str
-#     description: str
-#     price: str
-#     image: str
+class PedidoIn(BaseModel):
+    # subid: int
+    title: str
+    description: str
+    price: str
+    image: str
 
 
 
@@ -200,6 +201,26 @@ async def create_cadastros(cadastro: CadastroIn):
     return {**cadastro.dict(), "id": last_record_id3}
 
 
+
+@app.get("/teste/", response_model=List[Teste])   
+async def read_teste():
+    query = testes.select()
+    return await database.fetch_all(query)
+
+@app.get("/teste/{subid}", response_model=List[Teste])   
+async def read_teste_by_id(subid:int):
+    query = testes.select().where(testes.c.subid == subid)
+    return await database.fetch_all(query) 
+
+@app.post("/teste/", response_model=Teste)   
+async def create_testes(teste: TesteIn):
+    query = testes.insert().values(alltestes=teste.alltestes, subid=teste.subid)
+    last_record_id5 = await database.execute(query)
+    return {**teste.dict(), "id": last_record_id5}
+
+
+
+
 ## PEDIDO
 
 # @app.get("/pedido/", response_model=List[Pedido])   
@@ -221,18 +242,3 @@ async def create_cadastros(cadastro: CadastroIn):
 
 
 
-@app.get("/teste/", response_model=List[Teste])   
-async def read_array():
-    query = testes.select()
-    return await database.fetch_all(query)
-
-@app.get("/pedido/{subid}", response_model=List[Teste])   
-async def read_item_by_id(subid:int):
-    query = testes.select().where(testes.c.subid == subid)
-    return await database.fetch_all(query) 
-
-@app.post("/teste/", response_model=Teste)   
-async def create_pedidos(pedido: TesteIn):
-    query = testes.insert().values(alltestes=pedido.alltestes)
-    last_record_id5 = await database.execute(query)
-    return {**pedido.dict(), "id": last_record_id5}
