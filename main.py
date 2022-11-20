@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set, Union
 from fastapi import FastAPI
 import databases
 import sqlalchemy
@@ -53,6 +53,13 @@ pedidos = sqlalchemy.Table(
     sqlalchemy.Column("price", sqlalchemy.String),
     sqlalchemy.Column("image", sqlalchemy.String),
     
+)
+
+testes = sqlalchemy.Table(
+    "testes",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("alltestes", sqlalchemy.ARRAY(sqlalchemy.String)),
 )
 
 engine = sqlalchemy.create_engine(
@@ -119,11 +126,21 @@ class Pedido(BaseModel):
     image: str
 
 class PedidoIn(BaseModel):
-    subid: int
+    # subid: int
     title: str
     description: str
     price: str
     image: str
+
+
+
+class Teste(BaseModel):
+    id: int
+    alltestes: list[list[str]]
+
+class TesteIn(BaseModel):
+    alltestes: list[list[str]]
+
 
 app = FastAPI()
 
@@ -197,3 +214,17 @@ async def create_pedidos(pedido: PedidoIn):
     query = pedidos.insert().values(title=pedido.title, image=pedido.image, price=pedido.price, description=pedido.description, subid=pedido.subid)
     last_record_id4 = await database.execute(query)
     return {**pedido.dict(), "id": last_record_id4}
+
+
+
+
+@app.get("/teste/", response_model=List[Teste])   
+async def read_array():
+    query = testes.select()
+    return await database.fetch_all(query)
+
+@app.post("/teste/", response_model=Teste)   
+async def create_pedidos(pedido: TesteIn):
+    query = testes.insert().values(alltestes=pedido.alltestes)
+    last_record_id5 = await database.execute(query)
+    return {**pedido.dict(), "id": last_record_id5}
