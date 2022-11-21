@@ -1,4 +1,4 @@
-from typing import List, Set, Union
+from typing import List
 from fastapi import FastAPI
 import databases
 import sqlalchemy
@@ -43,25 +43,13 @@ cadastros = sqlalchemy.Table(
     
 )
 
-# pedidos = sqlalchemy.Table(
-#     "pedidos",
-#     metadata,
-#     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-#     sqlalchemy.Column("subid", sqlalchemy.Integer),
-#     sqlalchemy.Column("title", sqlalchemy.String),
-#     sqlalchemy.Column("description", sqlalchemy.String),
-#     sqlalchemy.Column("price", sqlalchemy.String),
-#     sqlalchemy.Column("image", sqlalchemy.String),
-    
-# )
-
-testes = sqlalchemy.Table(
-    "testes",
+pedidos = sqlalchemy.Table(
+    "pedidos",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("subid", sqlalchemy.Integer),
-    # sqlalchemy.Column("alltestes", sqlalchemy.String),
     sqlalchemy.Column("alltestes", sqlalchemy.ARRAY(sqlalchemy.String)),
+    
 )
 
 engine = sqlalchemy.create_engine(
@@ -119,32 +107,14 @@ class CadastroIn(BaseModel):
     email: str
     senha: str
 
-# class Pedido(BaseModel):
-#     id: int
-#     subid: int
-#     title: str
-#     description: str
-#     price: str
-#     image: str
-
-class PedidoIn(BaseModel):
-    # subid: int
-    title: str
-    description: str
-    price: str
-    image: str
-
-
-
-class Teste(BaseModel):
+class Pedido(BaseModel):
     id: int
     subid: int
     alltestes: list[list[str]]
 
-class TesteIn(BaseModel):
+class PedidoIn(BaseModel):
     subid: int
     alltestes: list[list[str]]
-
 
 app = FastAPI()
 
@@ -200,45 +170,19 @@ async def create_cadastros(cadastro: CadastroIn):
     last_record_id3 = await database.execute(query)
     return {**cadastro.dict(), "id": last_record_id3}
 
-
-
-@app.get("/teste/", response_model=List[Teste])   
-async def read_teste():
-    query = testes.select()
+# PEDIDO
+@app.get("/pedido/", response_model=List[Pedido])   
+async def read_pedidos():
+    query = pedidos.select()
     return await database.fetch_all(query)
 
-@app.get("/teste/{subid}", response_model=List[Teste])   
-async def read_teste_by_id(subid:int):
-    query = testes.select().where(testes.c.subid == subid)
+@app.get("/pedido/{subid}", response_model=List[Pedido])   
+async def read_pedido_by_id(subid:int):
+    query = pedidos.select().where(pedidos.c.subid == subid)
     return await database.fetch_all(query) 
 
-@app.post("/teste/", response_model=Teste)   
-async def create_testes(teste: TesteIn):
-    query = testes.insert().values(alltestes=teste.alltestes, subid=teste.subid)
-    last_record_id5 = await database.execute(query)
-    return {**teste.dict(), "id": last_record_id5}
-
-
-
-
-## PEDIDO
-
-# @app.get("/pedido/", response_model=List[Pedido])   
-# async def read_pedidos():
-#     query = pedidos.select()
-#     return await database.fetch_all(query)
-
-# @app.get("/pedido/{subid}", response_model=List[Pedido])   
-# async def read_item_by_id(subid:int):
-#     query = pedidos.select().where(pedidos.c.subid == subid)
-#     return await database.fetch_all(query) 
-
-# @app.post("/pedido/", response_model=Pedido)   
-# async def create_pedidos(pedido: PedidoIn):
-#     query = pedidos.insert().values(title=pedido.title, image=pedido.image, price=pedido.price, description=pedido.description, subid=pedido.subid)
-#     last_record_id4 = await database.execute(query)
-#     return {**pedido.dict(), "id": last_record_id4}
-
-
-
-
+@app.post("/pedido/", response_model=Pedido)   
+async def create_pedidos(pedido: PedidoIn):
+    query = pedidos.insert().values(alltestes=pedido.alltestes, subid=pedido.subid)
+    last_record_id4 = await database.execute(query)
+    return {**pedido.dict(), "id": last_record_id4}
