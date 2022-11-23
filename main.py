@@ -48,7 +48,9 @@ pedidos = sqlalchemy.Table(
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("subid", sqlalchemy.Integer),
+    sqlalchemy.Column("nome", sqlalchemy.String),
     sqlalchemy.Column("valor", sqlalchemy.FLOAT),
+    sqlalchemy.Column("data", sqlalchemy.String),
     sqlalchemy.Column("itens", sqlalchemy.ARRAY(sqlalchemy.String)),
 )
 
@@ -110,12 +112,16 @@ class CadastroIn(BaseModel):
 class Pedido(BaseModel):
     id: int
     subid: int
+    nome: str
     valor: float
+    data: str
     itens: list[list[str]]
 
 class PedidoIn(BaseModel):
     subid: int
+    nome: str
     valor: float
+    data: str
     itens: list[list[str]]
 
 app = FastAPI()
@@ -188,9 +194,8 @@ async def read_pedido_by_id(subid:int, id: int):
     query = pedidos.select().where(pedidos.c.id == id ,pedidos.c.subid == subid)
     return await database.fetch_all(query) 
 
-
 @app.post("/pedido/", response_model=Pedido)   
 async def create_pedidos(pedido: PedidoIn):
-    query = pedidos.insert().values(subid=pedido.subid, itens=pedido.itens, valor=pedido.valor)
+    query = pedidos.insert().values(subid=pedido.subid, itens=pedido.itens, nome=pedido.nome, valor=pedido.valor, data=pedido.data)
     last_record_id4 = await database.execute(query)
     return {**pedido.dict(), "id": last_record_id4}
