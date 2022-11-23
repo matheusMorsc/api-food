@@ -183,6 +183,12 @@ async def read_pedido_by_id(subid:int):
     query = pedidos.select().where(pedidos.c.subid == subid)
     return await database.fetch_all(query) 
 
+@app.get("/pedido/{subid}/{id}", response_model=List[Pedido])   
+async def read_pedido_by_id(subid:int, id: int):
+    query = pedidos.select().where(pedidos.c.id == id ,pedidos.c.subid == subid)
+    return await database.fetch_all(query) 
+
+
 @app.post("/pedido/", response_model=Pedido)   
 async def create_pedidos(pedido: PedidoIn):
     query = pedidos.insert().values(subid=pedido.subid, itens=pedido.itens, valor=pedido.valor)
